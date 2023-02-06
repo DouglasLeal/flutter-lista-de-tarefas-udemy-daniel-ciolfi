@@ -1,4 +1,7 @@
+import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:lista_tarefas/Services/FilesService.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -18,6 +21,21 @@ class _HomePageState extends State<HomePage> {
     _taskController.clear();
     setState(() {
       _toDoList.add(newTask);
+    });
+
+    FilesService.saveData(_toDoList);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    FilesService.readData().then((value) {
+      setState(() {
+        if (value != null) {
+          _toDoList = json.decode(value);
+        }
+      });
     });
   }
 
@@ -72,19 +90,35 @@ class _HomePageState extends State<HomePage> {
       child: ListView.builder(
         itemCount: _toDoList.length,
         itemBuilder: (context, index) {
-          return CheckboxListTile(
-            onChanged: (value) {
-              setState(() {
-                _toDoList[index]["ok"] = value;
-              });
-            },
-            title: Text(_toDoList[index]["title"]),
-            value: _toDoList[index]["ok"],
-            secondary: CircleAvatar(
-              child: Icon(_toDoList[index]["ok"] ? Icons.check : Icons.error),
+          return Dismissible(
+            direction: DismissDirection.startToEnd,
+            background: Container(
+              color: Colors.red,
+              child: const Align(
+                alignment: Alignment(-0.9, 0),
+                child: Icon(Icons.delete_forever, color: Colors.white,),
+              ),
             ),
+            key: Key(DateTime.now().millisecondsSinceEpoch.toString()),
+            child: _checkboxListTile(index),
           );
         },
+      ),
+    );
+  }
+
+  _checkboxListTile(int index) {
+    return CheckboxListTile(
+      onChanged: (value) {
+        setState(() {
+          _toDoList[index]["ok"] = value;
+          FilesService.saveData(_toDoList);
+        });
+      },
+      title: Text(_toDoList[index]["title"]),
+      value: _toDoList[index]["ok"],
+      secondary: CircleAvatar(
+        child: Icon(_toDoList[index]["ok"] ? Icons.check : Icons.error),
       ),
     );
   }

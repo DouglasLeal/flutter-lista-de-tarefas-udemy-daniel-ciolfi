@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -11,16 +12,18 @@ class FilesService{
   }
 
   static Future<File> saveData(List lista) async {
-    String data = jsonEncode(lista);
+    String data = json.encode(lista);
+
     final file = await getFile();
     return file.writeAsString(data);
   }
 
   static Future<String?> readData() async {
-    try{
+    try {
       final file = await getFile();
+
       return file.readAsString();
-    }catch (e){
+    } catch (e) {
       return null;
     }
   }
