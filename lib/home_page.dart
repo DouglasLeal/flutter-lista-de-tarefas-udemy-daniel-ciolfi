@@ -9,6 +9,17 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List _toDoList = [];
+  final _taskController = TextEditingController();
+
+  void _addTask() {
+    Map<String, dynamic> newTask = Map();
+    newTask["title"] = _taskController.text;
+    newTask["ok"] = false;
+    _taskController.clear();
+    setState(() {
+      _toDoList.add(newTask);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,21 +39,53 @@ class _HomePageState extends State<HomePage> {
   _body() {
     return Column(
       children: [
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          child: Row(
-            children: [
-              const Expanded(
-                child: TextField(),
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Icon(Icons.add),
-              ),
-            ],
-          ),
-        )
+        _row(),
+        _listView(),
       ],
+    );
+  }
+
+  _row() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _taskController,
+              decoration: const InputDecoration(
+                labelText: "Nova Tarefa",
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: _addTask,
+            child: const Icon(Icons.add),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _listView() {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: _toDoList.length,
+        itemBuilder: (context, index) {
+          return CheckboxListTile(
+            onChanged: (value) {
+              setState(() {
+                _toDoList[index]["ok"] = value;
+              });
+            },
+            title: Text(_toDoList[index]["title"]),
+            value: _toDoList[index]["ok"],
+            secondary: CircleAvatar(
+              child: Icon(_toDoList[index]["ok"] ? Icons.check : Icons.error),
+            ),
+          );
+        },
+      ),
     );
   }
 }
