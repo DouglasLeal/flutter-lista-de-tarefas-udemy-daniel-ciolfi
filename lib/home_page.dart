@@ -50,7 +50,26 @@ class _HomePageState extends State<HomePage> {
       duration: const Duration(seconds: 2),
     );
 
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(snack);
+  }
+
+  Future<void> _refresh() async {
+    Future<void>.delayed(const Duration(seconds: 1));
+
+    setState(() {
+      _toDoList.sort((a, b){
+        if(a["ok"] && !b["ok"]){
+          return 1;
+        }else if(!a["ok"] && b["ok"]){
+          return -1;
+        }else{
+          return 0;
+        }
+      });
+    });
+
+    FilesService.saveData(_toDoList);
   }
 
   @override
@@ -114,26 +133,33 @@ class _HomePageState extends State<HomePage> {
 
   _listView() {
     return Expanded(
-      child: ListView.builder(
-        itemCount: _toDoList.length,
-        itemBuilder: (context, index) {
-          return Dismissible(
-            onDismissed: (direction){
-              _removeTask(index);
-            },
-            direction: DismissDirection.startToEnd,
-            background: Container(
-              color: Colors.red,
-              child: const Align(
-                alignment: Alignment(-0.9, 0),
-                child: Icon(Icons.delete_forever, color: Colors.white,),
-              ),
-            ),
-            key: Key(DateTime.now().millisecondsSinceEpoch.toString()),
-            child: _checkboxListTile(index),
-          );
-        },
+      child: RefreshIndicator(
+        onRefresh: _refresh,
+        child: ListView.builder(
+          itemCount: _toDoList.length,
+          itemBuilder: (context, index) {
+            return _dismissible(index);
+          },
+        ),
       ),
+    );
+  }
+
+  _dismissible(index){
+    return Dismissible(
+      onDismissed: (direction){
+        _removeTask(index);
+      },
+      direction: DismissDirection.startToEnd,
+      background: Container(
+        color: Colors.red,
+        child: const Align(
+          alignment: Alignment(-0.9, 0),
+          child: Icon(Icons.delete_forever, color: Colors.white,),
+        ),
+      ),
+      key: Key(DateTime.now().millisecondsSinceEpoch.toString()),
+      child: _checkboxListTile(index),
     );
   }
 
