@@ -12,6 +12,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List _toDoList = [];
+  Map<String, dynamic>? _lastRemoved;
+  int? _lastRemovedPos;
+
   final _taskController = TextEditingController();
 
   void _addTask() {
@@ -24,6 +27,30 @@ class _HomePageState extends State<HomePage> {
     });
 
     FilesService.saveData(_toDoList);
+  }
+
+  void _removeTask(int index){
+    _lastRemoved = Map.from(_toDoList[index]);
+    _lastRemovedPos = index;
+
+    setState(() {
+      _toDoList.removeAt(index);
+    });
+
+    FilesService.saveData(_toDoList);
+
+    final snack = SnackBar(
+        content: Text("Tarefa: ${_lastRemoved?["title"]} removida"),
+        action: SnackBarAction(label: "Desfazer", onPressed: (){
+          setState(() {
+            _toDoList.insert(index, _lastRemoved);
+          });
+          FilesService.saveData(_toDoList);
+        }),
+      duration: const Duration(seconds: 2),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snack);
   }
 
   @override
@@ -91,6 +118,9 @@ class _HomePageState extends State<HomePage> {
         itemCount: _toDoList.length,
         itemBuilder: (context, index) {
           return Dismissible(
+            onDismissed: (direction){
+              _removeTask(index);
+            },
             direction: DismissDirection.startToEnd,
             background: Container(
               color: Colors.red,
