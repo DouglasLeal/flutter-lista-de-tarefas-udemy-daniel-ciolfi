@@ -1,16 +1,17 @@
-# lista_tarefas
+<h1>To-Do List</h1>
 
-Projeto curso udemy Daniel Ciolfi.
+<p>Aplicativo de lista de tarefas.</p>
 
-## Getting Started
+<br>
 
-This project is a starting point for a Flutter application.
+<h2>Link do curso</h2>
+<a href="https://www.udemy.com/course/curso-completo-flutter-app-android-ios/">
+Criação de Apps Android/iOS/Web com Flutter
+</a>
 
-A few resources to get you started if this is your first Flutter project:
+<br><br>
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<h2>Screenshots</h2>
+<div align="center">
+    <img  src="https://raw.githubusercontent.com/DouglasLeal/flutter-lista-de-tarefas-udemy-daniel-ciolfi/main/screenshots/tela.png">
+</div>
